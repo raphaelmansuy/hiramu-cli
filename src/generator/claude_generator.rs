@@ -10,19 +10,25 @@ use hiramu::bedrock::{
 use tokio::io::AsyncWriteExt;
 
 use crate::model::Generate;
-pub struct ClaudeGenerator {}
+pub struct ClaudeGenerator {
+    region: String,
+    profile: String,
+}
 
 impl ClaudeGenerator {
-    pub fn new() -> ClaudeGenerator {
-        ClaudeGenerator {}
+    pub fn new(region: Option<String>, profile: Option<String>) -> ClaudeGenerator {
+        ClaudeGenerator {
+            region: region.unwrap_or_else(|| "us-west-2".to_string()),
+            profile: profile.unwrap_or_else(|| "bedrock".to_string()),
+        }
     }
 }
 
 impl Generate for ClaudeGenerator {
     async fn generate(&self, question: &str) {
         let claude_options = ClaudeOptions::new()
-            .profile_name("bedrock")
-            .region("us-west-2");
+            .profile_name(&self.profile)
+            .region(&self.region);
 
         let client = ClaudeClient::new(claude_options).await;
 

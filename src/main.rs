@@ -12,12 +12,22 @@ fn cli() -> Command {
             Command::new("prompt")
                 .about("Ask a question to a LLM")
                 .arg(arg!(<PROMPT> "The promp to ask"))
+                .arg(
+                    arg!(-r --region <REGION> "The region to use")
+                        .required(false)
+                        .default_value("us-west-2"),
+                )
+                .arg(
+                    arg!(-p --profile <PROFILE> "The profile to use")
+                        .required(false)
+                        .default_value("bedrock"),
+                )
                 .arg_required_else_help(true),
         )
 }
 
-pub async fn generate(question: &str) {
-    let claude_generator = ClaudeGenerator::new();
+pub async fn generate(question: &str, region: Option<String>, profile: Option<String>) {
+    let claude_generator = ClaudeGenerator::new(region, profile);
     claude_generator.generate(question).await;
 }
 
@@ -28,10 +38,11 @@ async fn main() {
     match matches.subcommand() {
         Some(("prompt", sub_matches)) => {
             let prompt = sub_matches.get_one::<String>("PROMPT").expect("required");
-            generate(prompt).await;
+            let region = sub_matches.get_one::<String>("region").cloned();
+            let profile = sub_matches.get_one::<String>("profile").cloned();
+            generate(prompt, region, profile).await;
         }
-        _ => unreachable!(), // If all subcommands are defined above, anything else is unreachable!()
+        _ => unreachable!(),
     }
-
     // Continued program logic goes here...
 }
