@@ -13,13 +13,22 @@ use crate::model::Generate;
 pub struct ClaudeGenerator {
     region: String,
     profile: String,
+    max_token: Option<u32>,
+    temperature: Option<f32>,
 }
 
 impl ClaudeGenerator {
-    pub fn new(region: Option<String>, profile: Option<String>) -> ClaudeGenerator {
+    pub fn new(
+        region: Option<String>,
+        profile: Option<String>,
+        max_token: Option<u32>,
+        temperature: Option<f32>,
+    ) -> ClaudeGenerator {
         ClaudeGenerator {
             region: region.unwrap_or_else(|| "us-west-2".to_string()),
             profile: profile.unwrap_or_else(|| "bedrock".to_string()),
+            max_token,
+            temperature,
         }
     }
 }
@@ -37,12 +46,17 @@ impl Generate for ClaudeGenerator {
             .messages
             .push(Message::new_user_message(question.to_owned()));
 
-        let chat_options = ChatOptions::default()
-            .with_temperature(0.7)
-            .with_max_tokens(100)
-            .with_model_id(ModelInfo::from_model_name(
-                ModelName::AnthropicClaudeHaiku1x,
-            ));
+        let mut chat_options = ChatOptions::default().with_model_id(ModelInfo::from_model_name(
+            ModelName::AnthropicClaudeHaiku1x,
+        ));
+
+        if let Some(max_token) = self.max_token {
+            chat_options = chat_options.with_max_tokens(max_token);
+        }
+
+        if let Some(temperature) = self.temperature {
+            chat_options = chat_options.with_temperature(temperature);
+        }
 
         let response_stream = client
             .chat_with_stream(&conversation_request, &chat_options)

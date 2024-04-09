@@ -22,12 +22,30 @@ fn cli() -> Command {
                         .required(false)
                         .default_value("bedrock"),
                 )
+                .arg(
+                    arg!(-m --maxtoken <MAXTOKEN> "The maximum number of tokens to generate")
+                        .required(false)
+                        .default_value("100")
+                        .value_parser(clap::value_parser!(u32)),
+                )
+                .arg(
+                    arg!(-t --temperature <TEMPERATURE> "The temperature to use for generation")
+                        .required(false)
+                        .default_value("0.7")
+                        .value_parser(clap::value_parser!(f32)),
+                )
                 .arg_required_else_help(true),
         )
 }
 
-pub async fn generate(question: &str, region: Option<String>, profile: Option<String>) {
-    let claude_generator = ClaudeGenerator::new(region, profile);
+pub async fn generate(
+    question: &str,
+    region: Option<String>,
+    profile: Option<String>,
+    max_token: Option<u32>,
+    temperature: Option<f32>,
+) {
+    let claude_generator = ClaudeGenerator::new(region, profile, max_token, temperature);
     claude_generator.generate(question).await;
 }
 
@@ -40,9 +58,10 @@ async fn main() {
             let prompt = sub_matches.get_one::<String>("PROMPT").expect("required");
             let region = sub_matches.get_one::<String>("region").cloned();
             let profile = sub_matches.get_one::<String>("profile").cloned();
-            generate(prompt, region, profile).await;
+            let max_token = sub_matches.get_one::<u32>("maxtoken").cloned();
+            let temperature = sub_matches.get_one::<f32>("temperature").cloned();
+            generate(prompt, region, profile, max_token, temperature).await;
         }
         _ => unreachable!(),
     }
-    // Continued program logic goes here...
 }
