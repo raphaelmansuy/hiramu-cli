@@ -1,11 +1,15 @@
-//use std::ffi::OsString;
-//use std::path::PathBuf;
-
 use std::io::Write;
 
 use clap::{arg, Command};
 use futures_util::TryStreamExt;
-use hiramu::bedrock::{models::claude::{claude_client::ClaudeOptions, claude_request_message::{ContentBlockDelta, StreamResultData}, ChatOptions, ClaudeClient, ConversationRequest, Message}, ModelInfo, ModelName};
+use hiramu::bedrock::{
+    models::claude::{
+        claude_client::ClaudeOptions,
+        claude_request_message::{ContentBlockDelta, StreamResultData},
+        ChatOptions, ClaudeClient, ConversationRequest, Message,
+    },
+    ModelInfo, ModelName,
+};
 
 fn cli() -> Command {
     Command::new("hiramu-cli")
@@ -21,9 +25,7 @@ fn cli() -> Command {
         )
 }
 
-
-pub async fn generate(question: &str)  {
-       
+pub async fn generate(question: &str) {
     let claude_options = ClaudeOptions::new()
         .profile_name("bedrock")
         .region("us-west-2");
@@ -62,9 +64,8 @@ pub async fn generate(question: &str)  {
         .await
         .unwrap();
 
-    println!(); 
+    println!();
 }
-
 
 #[tokio::main]
 async fn main() {
