@@ -34,3 +34,18 @@ jobs:
         draft: false
         prerelease: false
 
+    - name: "Update Homebrew formula"
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+            # Clone the Homebrew tap repository
+            git clone https://github.com/raphaelmansuy/homebrew-tap.git
+            cd homebrew-tap
+
+            # Update the Homebrew formula
+            brew bump-formula-pr --version="${{ github.ref }}" --url="https://github.com/raphaelmansuy/hiramu-cli/archive/${{ github.ref }}.tar.gz" hiramu-cli
+
+            # Push the changes to the Homebrew tap repository
+            git push origin master
+
