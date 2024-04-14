@@ -57,17 +57,20 @@ jobs:
             # Check if Homebrew is installed
             if ! command -v brew &> /dev/null
             then
-                echo "Homebrew could not be installed"
-                exit 1
+              echo "Homebrew could not be installed"
+              exit 1
             fi
-          
+            
             # Clone the Homebrew tap repository
             git clone https://github.com/raphaelmansuy/homebrew-tap.git
             cd homebrew-tap
-          
+            
+            # Extract the version number from the GitHub ref
+            version="${GITHUB_REF#refs/tags/v}"
+            
             # Update the Homebrew formula
-            brew bump-formula-pr --version="${{ github.ref }}" --url="https://github.com/raphaelmansuy/hiramu-cli/archive/${{ github.ref }}.tar.gz" hiramu-cli
-          
+            brew bump-formula-pr --version="$version" --url="https://github.com/raphaelmansuy/hiramu-cli/archive/v$version.tar.gz" hiramu-cli
+            
             # Push the changes to the Homebrew tap repository
             git push origin master
 
