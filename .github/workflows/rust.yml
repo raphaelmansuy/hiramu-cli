@@ -47,19 +47,19 @@ jobs:
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-            # Install Homebrew
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-            
-            # Add Homebrew to PATH
-            echo "/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin" >> $GITHUB_PATH
+        # Install Homebrew
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        
+        # Add Homebrew to PATH
+        echo "/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin" >> $GITHUB_PATH
 
-            # Clone the Homebrew tap repository
-            git clone https://github.com/raphaelmansuy/homebrew-tap.git
-            cd homebrew-tap
+        # Clone the Homebrew tap repository
+        git clone https://github.com/raphaelmansuy/homebrew-tap.git
+        cd homebrew-tap
 
-            # Update the Homebrew formula
-            brew bump-formula-pr --version="${{ github.ref }}" --url="https://github.com/raphaelmansuy/hiramu-cli/archive/${{ github.ref }}.tar.gz" hiramu-cli
+        # Update the Homebrew formula
+        brew bump-formula-pr --version="${{ github.ref }}" --url="https://github.com/raphaelmansuy/hiramu-cli/archive/${{ github.ref }}.tar.gz" hiramu-cli
 
-            # Push the changes to the Homebrew tap repository
-            git push origin master
+        # Push the changes to the Homebrew tap repository
+        git push origin master
 
