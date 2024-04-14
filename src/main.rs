@@ -1,6 +1,9 @@
 use clap::{arg, Command};
 
-use hiramu_cli::{generator::claude_generator::ClaudeGenerator, model::Generate};
+use hiramu::bedrock::ModelName;
+use hiramu_cli::{generator::claude_generator::ClaudeGenerator, model::Generate, model_alias::ModelAlias};
+
+
 
 fn cli() -> Command {
     Command::new("hiramu-cli")
@@ -34,6 +37,12 @@ fn cli() -> Command {
                         .default_value("0.7")
                         .value_parser(clap::value_parser!(f32)),
                 )
+                .arg(
+                    arg!(-M --model <MODEL> "The model alias to use for generation")
+                        .required(false)
+                        .default_value("haiku")
+                        .value_parser(clap::value_parser!(ModelAlias)),
+                )
                 .arg_required_else_help(true),
         )
 }
@@ -44,9 +53,26 @@ pub async fn generate(
     profile: Option<String>,
     max_token: Option<u32>,
     temperature: Option<f32>,
+    model: Option<ModelAlias>,
 ) {
-    let claude_generator = ClaudeGenerator::new(region, profile, max_token, temperature);
-    claude_generator.generate(question).await;
+    // get model_name form model 
+
+
+    match model {
+        Some(ModelAlias::Haiku) => {
+            let model_name = ModelName::AnthropicClaudeHaiku1x;
+            let claude_generator = ClaudeGenerator::new(region, profile, max_token, temperature, Some(model_name));
+            claude_generator.generate(question).await;
+        }
+        Some(ModelAlias::Sonnet) => {
+            let model_name = ModelName::AnthropicClaudeSonnet1x;
+            let claude_generator = ClaudeGenerator::new(region, profile, max_token, temperature, Some(model_name));
+            claude_generator.generate(question).await;
+        }
+        _ => {
+            println!("Model not found");
+        }
+    }
 }
 
 #[tokio::main]
@@ -60,7 +86,8 @@ async fn main() {
             let profile = sub_matches.get_one::<String>("profile").cloned();
             let max_token = sub_matches.get_one::<u32>("maxtoken").cloned();
             let temperature = sub_matches.get_one::<f32>("temperature").cloned();
-            generate(prompt, region, profile, max_token, temperature).await;
+            let model = sub_matches.get_one::<ModelAlias>("model").cloned();
+            generate(prompt, region, profile, max_token, temperature,model).await;
         }
         _ => unreachable!(),
     }

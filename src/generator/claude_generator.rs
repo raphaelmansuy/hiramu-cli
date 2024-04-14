@@ -15,6 +15,7 @@ pub struct ClaudeGenerator {
     profile: String,
     max_token: Option<u32>,
     temperature: Option<f32>,
+    model: Option<ModelName>,
 }
 
 impl ClaudeGenerator {
@@ -23,12 +24,14 @@ impl ClaudeGenerator {
         profile: Option<String>,
         max_token: Option<u32>,
         temperature: Option<f32>,
+        model: Option<ModelName>,
     ) -> ClaudeGenerator {
         ClaudeGenerator {
             region: region.unwrap_or_else(|| "us-west-2".to_string()),
             profile: profile.unwrap_or_else(|| "bedrock".to_string()),
             max_token,
             temperature,
+            model,
         }
     }
 }
@@ -46,10 +49,13 @@ impl Generate for ClaudeGenerator {
             .messages
             .push(Message::new_user_message(question.to_owned()));
 
-        let mut chat_options = ChatOptions::default().with_model_id(ModelInfo::from_model_name(
-            ModelName::AnthropicClaudeHaiku1x,
-        ));
+        let model_name = self
+            .model
+            .as_ref()
+            .unwrap_or(&ModelName::AnthropicClaudeHaiku1x);
 
+        let mut chat_options =
+            ChatOptions::default().with_model_id(ModelInfo::from_model_name(model_name.clone()));
         if let Some(max_token) = self.max_token {
             chat_options = chat_options.with_max_tokens(max_token);
         }
