@@ -43,7 +43,7 @@ jobs:
         prerelease: false
 
     - name: "Update Homebrew formula"
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master' && false
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
