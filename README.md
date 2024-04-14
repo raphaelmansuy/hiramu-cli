@@ -75,7 +75,7 @@ Contributions to Hiramu CLI are welcome! If you find any issues or have suggesti
 
 ## License
 
-Hiramu CLI is released under the [MIT License](LICENSE).
+Hiramu CLI is released under the [Apache 2](LICENSE).
 
 ## Acknowledgements
 
