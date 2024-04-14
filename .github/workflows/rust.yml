@@ -24,7 +24,7 @@ jobs:
       run: echo "VERSION=$(grep '^version' Cargo.toml | cut -d '"' -f 2)" >> $GITHUB_ENV
 
     - name: Create release
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
