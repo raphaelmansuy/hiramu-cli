@@ -1,7 +1,7 @@
 use clap::{arg, Command};
 
 use hiramu::bedrock::ModelName;
-use hiramu_cli::{generator::claude_generator::ClaudeGenerator, model::Generate, model_alias::ModelAlias};
+use hiramu_cli::{generator::{claude_generator::ClaudeGenerator, mistral_generator::MistralGenerator}, model::Generate, model_alias::ModelAlias};
 
 
 
@@ -68,6 +68,24 @@ pub async fn generate(
             let model_name = ModelName::AnthropicClaudeSonnet1x;
             let claude_generator = ClaudeGenerator::new(region, profile, max_token, temperature, Some(model_name));
             claude_generator.generate(question).await;
+        }
+        Some(ModelAlias::Mistral7b) => {
+            let model_name = ModelName::MistralMistral7BInstruct0x;
+            let mistral_generator =
+                MistralGenerator::new(region, profile, max_token, temperature, Some(model_name));
+            mistral_generator.generate(question).await;
+        }
+        Some(ModelAlias::Mistral8x7b) => {
+            let model_name = ModelName::MistralMixtral8X7BInstruct0x;
+            let mistral_generator =
+                MistralGenerator::new(region, profile, max_token, temperature, Some(model_name));
+            mistral_generator.generate(question).await;
+        }
+        Some(ModelAlias::MistralLarge) => {
+            let model_name = ModelName::MistralLarge;
+            let mistral_generator =
+                MistralGenerator::new(region, profile, max_token, temperature, Some(model_name));
+            mistral_generator.generate(question).await;
         }
         _ => {
             println!("Model not found");
