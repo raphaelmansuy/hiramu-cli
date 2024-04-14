@@ -21,8 +21,7 @@ jobs:
 
 
     - name: Get version
-      id: get_version
-      run: echo ::set-output name=VERSION::$(grep '^version' Cargo.toml | cut -d '"' -f 2)
+      run: echo "VERSION=$(grep '^version' Cargo.toml | cut -d '"' -f 2)" >> $GITHUB_ENV
 
     - name: Create release
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -30,8 +29,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v${{ steps.get_version.outputs.VERSION }}
-        release_name: Release v${{ steps.get_version.outputs.VERSION }}
+        tag_name: v${{ env.VERSION }}
+        release_name: Release v${{ env.VERSION }}
         draft: false
         prerelease: false
 
