@@ -7,7 +7,7 @@ use hiramu_cli::{generator::{claude_generator::ClaudeGenerator, mistral_generato
 
 fn cli() -> Command {
     Command::new("hiramu-cli")
-        .about("A fictional versioning CLI")
+        .about("Ask a question to a language model. You can specify the region, profile, maximum number of tokens, temperature, and model alias.")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .allow_external_subcommands(true)
