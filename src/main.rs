@@ -2,6 +2,8 @@ use std::io::Read;
 
 use clap::{arg, Command};
 
+const VERSION: &str = "0.1.9";
+
 use hiramu::bedrock::ModelName;
 use hiramu_cli::{
     generator::{claude_generator::ClaudeGenerator, mistral_generator::MistralGenerator},
@@ -15,6 +17,10 @@ fn cli() -> Command {
         .subcommand_required(true)
         .arg_required_else_help(true)
         .allow_external_subcommands(true)
+        .subcommand(
+            Command::new("version")
+                .about("Displays the version of the application")
+        )
         .subcommand(
             Command::new("prompt")
                 .about("Ask a question to a LLM")
@@ -117,6 +123,9 @@ async fn main() {
             let temperature = sub_matches.get_one::<f32>("temperature").cloned();
             let model = sub_matches.get_one::<ModelAlias>("model").cloned();
             generate(prompt, region, profile, max_token, temperature, model).await;
+        }
+        Some(("version", _)) => {
+            println!("hiramu-cli version {}", VERSION);
         }
         _ => unreachable!(),
     }
