@@ -1,88 +1,91 @@
 # Hiramu CLI
 
-Hiramu CLI is a command-line interface tool that allows you to interact with large language models (LLMs) and generate text based on prompts. It provides a convenient way to ask questions and receive generated responses from various LLMs.
+Hiramu CLI is a powerful command-line interface for interacting with language models. It provides a seamless way to ask questions and generate text using various models, including Claude (Haiku and Sonnet) and Mistral (7B, 8x7B, and Large).
 
 ## Features
 
-- Support for multiple LLMs, including Anthropic's Claude models (Haiku and Sonnet) (AWS Bedrock)
-- Customizable generation parameters, such as maximum token count and temperature
-- Streaming output for real-time response display
-- Easy-to-use command-line interface with intuitive options
+- Ask questions to language models using a simple command-line interface
+- Support for multiple models, including Claude and Mistral
+- Customizable options for region, profile, maximum number of tokens, temperature, and model alias
+- Interactive input using the `{input}` placeholder in prompts
+- Real-time streaming of generated text
 
 ## Installation
 
-To install Hiramu CLI, ensure you have Rust installed on your system. Then, follow these steps:
-
-1. Clone the repository:
+To install Hiramu CLI, ensure you have Rust installed on your system. Then, run the following command:
 
 ```bash
-git clone https://github.com/yourusername/hiramu-cli.git
+cargo install hiramu-cli
 ```
-
-2. Change to the project directory:
-
-```bash
-cd hiramu-cli
-```
-
-3. Build the project:
-
-```bash
-cargo build --release
-```
-
-4. The compiled binary will be available in the `target/release` directory. You can add it to your system's PATH for easy access.
 
 ## Usage
 
-To use Hiramu CLI, run the following command:
+To ask a question to a language model, use the `prompt` subcommand followed by the question. You can specify additional options to customize the behavior of the CLI.
 
 ```bash
-hiramu-cli prompt [OPTIONS] <PROMPT>
+hiramu-cli prompt "What is the capital of France?" -r us-west-2 -p bedrock -m 100 -t 0.7 -M haiku
 ```
-
-Replace `<PROMPT>` with the question or prompt you want to ask the LLM.
 
 ### Options
 
-- `-r, --region <REGION>`: Specify the region to use (default: "us-west-2").
-- `-p, --profile <PROFILE>`: Specify the profile to use (default: "bedrock").
-- `-m, --maxtoken <MAXTOKEN>`: Set the maximum number of tokens to generate (default: 100).
-- `-t, --temperature <TEMPERATURE>`: Set the temperature for generation (default: 0.7).
-- `-M, --model <MODEL>`: Specify the model alias to use for generation (default: "haiku").
+- `-r, --region <REGION>`: The region to use (default: "us-west-2").
+- `-p, --profile <PROFILE>`: The profile to use (default: "bedrock").
+- `-m, --maxtoken <MAXTOKEN>`: The maximum number of tokens to generate (default: 100).
+- `-t, --temperature <TEMPERATURE>`: The temperature to use for generation (default: 0.7).
+- `-M, --model <MODEL>`: The model alias to use for generation (default: "haiku").
 
-### Examples
+### Interactive Input
 
-1. Ask a question using the default settings:
-
-```bash
-hiramu-cli prompt "What is the capital of France?"
-```
-
-2. Ask a question using a specific model and custom parameters:
+Hiramu CLI supports interactive input using the `{input}` placeholder in prompts. When the placeholder is present, the CLI will prompt you to enter the input, which will be inserted into the prompt before sending it to the language model.
 
 ```bash
-hiramu-cli prompt -M sonnet -m 200 -t 0.8 "Explain the concept of quantum entanglement."
+hiramu-cli prompt "Translate the following text from English to French: {input}" -M sonnet
 ```
 
-## Configuration
+This feature allows you to provide dynamic input to the language model during runtime.
 
-Hiramu CLI uses the `hiramu` library for interacting with LLMs. Make sure you have the necessary credentials and configurations set up for the LLMs you want to use.
+### Model Aliases
+
+Hiramu CLI provides convenient aliases for different language models. The following model aliases are available:
+
+- `haiku`: Anthropic Claude Haiku 1x
+- `sonnet`: Anthropic Claude Sonnet 1x
+- `mistral7b`: Mistral 7B Instruct 0x
+- `mistral8x7b`: Mistral 8x7B Instruct 0x
+- `mistral-large`: Mistral Large
+
+You can use these aliases with the `-M` or `--model` option to specify the desired model for generation.
+
+## Examples
+
+Here are a few examples demonstrating the usage of Hiramu CLI:
+
+1. Ask a question using the default options:
+   ```bash
+   hiramu-cli prompt "What is the capital of France?"
+   ```
+
+2. Ask a question using a specific model and temperature:
+   ```bash
+   hiramu-cli prompt "What is the meaning of life?" -M sonnet -t 0.5
+   ```
+
+3. Translate text interactively:
+   ```bash
+   hiramu-cli prompt "Translate the following text from English to Spanish: {input}" -M mistral8x7b
+   ```
+
+4. Generate a story with a given prompt:
+   ```bash
+   hiramu-cli prompt "Once upon a time, in a far-off land, there lived a brave knight named {input}. The knight embarked on a quest to..." -m 200 -M mistral-large
+   ```
+
+Feel free to explore different prompts, models, and options to generate various types of content using Hiramu CLI.
 
 ## Contributing
 
-Contributions to Hiramu CLI are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the GitHub repository.
+Contributions to Hiramu CLI are welcome! If you encounter any issues or have suggestions for improvements, please open an issue on the GitHub repository.
 
 ## License
 
-Hiramu CLI is released under the [Apache 2](LICENSE).
-
-## Acknowledgements
-
-Hiramu CLI is built using the following libraries and frameworks:
-
-- [hiramu](https://github.com/yourusername/hiramu): A library for interacting with LLMs.
-- [clap](https://github.com/clap-rs/clap): A command-line argument parser for Rust.
-- [tokio](https://github.com/tokio-rs/tokio): An asynchronous runtime for Rust.
-
-We would like to thank the developers and contributors of these projects for their excellent work.
+Hiramu CLI is open-source software licensed under the [Apache 2](LICENSE).

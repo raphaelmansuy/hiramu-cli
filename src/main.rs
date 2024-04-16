@@ -1,9 +1,13 @@
+use std::io::Read;
+
 use clap::{arg, Command};
 
 use hiramu::bedrock::ModelName;
-use hiramu_cli::{generator::{claude_generator::ClaudeGenerator, mistral_generator::MistralGenerator}, model::Generate, model_alias::ModelAlias};
-
-
+use hiramu_cli::{
+    generator::{claude_generator::ClaudeGenerator, mistral_generator::MistralGenerator},
+    model::Generate,
+    model_alias::ModelAlias,
+};
 
 fn cli() -> Command {
     Command::new("hiramu-cli")
@@ -55,37 +59,47 @@ pub async fn generate(
     temperature: Option<f32>,
     model: Option<ModelAlias>,
 ) {
-    // get model_name form model 
+    let mut prompt = question.to_string();
 
+    if prompt.contains("{input}") {
+        let mut input = String::new();
+        std::io::stdin().read_to_string(&mut input).unwrap();
+        prompt = prompt.replace("{input}", input.trim());
+    }
 
+    print!("Prompt: {}\n", prompt);
+
+    // get model_name form model
     match model {
         Some(ModelAlias::Haiku) => {
             let model_name = ModelName::AnthropicClaudeHaiku1x;
-            let claude_generator = ClaudeGenerator::new(region, profile, max_token, temperature, Some(model_name));
-            claude_generator.generate(question).await;
+            let claude_generator =
+                ClaudeGenerator::new(region, profile, max_token, temperature, Some(model_name));
+            claude_generator.generate(&prompt).await;
         }
         Some(ModelAlias::Sonnet) => {
             let model_name = ModelName::AnthropicClaudeSonnet1x;
-            let claude_generator = ClaudeGenerator::new(region, profile, max_token, temperature, Some(model_name));
-            claude_generator.generate(question).await;
+            let claude_generator =
+                ClaudeGenerator::new(region, profile, max_token, temperature, Some(model_name));
+            claude_generator.generate(&prompt).await;
         }
         Some(ModelAlias::Mistral7b) => {
             let model_name = ModelName::MistralMistral7BInstruct0x;
             let mistral_generator =
                 MistralGenerator::new(region, profile, max_token, temperature, Some(model_name));
-            mistral_generator.generate(question).await;
+            mistral_generator.generate(&prompt).await;
         }
         Some(ModelAlias::Mistral8x7b) => {
             let model_name = ModelName::MistralMixtral8X7BInstruct0x;
             let mistral_generator =
                 MistralGenerator::new(region, profile, max_token, temperature, Some(model_name));
-            mistral_generator.generate(question).await;
+            mistral_generator.generate(&prompt).await;
         }
         Some(ModelAlias::MistralLarge) => {
             let model_name = ModelName::MistralLarge;
             let mistral_generator =
                 MistralGenerator::new(region, profile, max_token, temperature, Some(model_name));
-            mistral_generator.generate(question).await;
+            mistral_generator.generate(&prompt).await;
         }
         _ => {
             println!("Model not found");
@@ -105,7 +119,7 @@ async fn main() {
             let max_token = sub_matches.get_one::<u32>("maxtoken").cloned();
             let temperature = sub_matches.get_one::<f32>("temperature").cloned();
             let model = sub_matches.get_one::<ModelAlias>("model").cloned();
-            generate(prompt, region, profile, max_token, temperature,model).await;
+            generate(prompt, region, profile, max_token, temperature, model).await;
         }
         _ => unreachable!(),
     }
