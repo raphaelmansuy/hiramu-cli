@@ -67,7 +67,6 @@ pub async fn generate(
         prompt = prompt.replace("{input}", input.trim());
     }
 
-    print!("Prompt: {}\n", prompt);
 
     // get model_name form model
     match model {
