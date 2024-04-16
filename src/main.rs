@@ -18,8 +18,7 @@ fn cli() -> Command {
         .subcommand(
             Command::new("prompt")
                 .about("Ask a question to a LLM")
-                .arg(arg!(<PROMPT> "The promp to ask"))
-                .arg(
+                .arg(arg!(<PROMPT> "The prompt to ask. Can contain {input} to read from stdin. For example, 'What is the capital of {input}?' will read a country name from stdin and ask the model for its capital."))                .arg(
                     arg!(-r --region <REGION> "The region to use")
                         .required(false)
                         .default_value("us-west-2"),
@@ -47,7 +46,7 @@ fn cli() -> Command {
                         .default_value("haiku")
                         .value_parser(clap::value_parser!(ModelAlias)),
                 )
-                .arg_required_else_help(true),
+                .arg_required_else_help(false),
         )
 }
 
@@ -66,7 +65,6 @@ pub async fn generate(
         std::io::stdin().read_to_string(&mut input).unwrap();
         prompt = prompt.replace("{input}", input.trim());
     }
-
 
     // get model_name form model
     match model {
