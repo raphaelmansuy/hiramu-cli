@@ -127,6 +127,7 @@ async fn main() {
         Some(("version", _)) => {
             println!("hiramu-cli version {}", VERSION);
         }
-        _ => unreachable!(),
+        // Help and version commands are handled automatically by clap
+        _ => {}
     }
 }

@@ -1,6 +1,6 @@
 [package]
 name = "hiramu-cli"
-version = "0.1.9"
+version = "0.1.10"
 edition = "2021"
 description = "A command-line interface tool for interacting with large language models (LLMs) and generating text based on prompts."
 license = "Apache-2.0"
