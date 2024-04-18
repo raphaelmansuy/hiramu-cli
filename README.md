@@ -48,8 +48,9 @@ This feature allows you to provide dynamic input to the language model during ru
 
 Hiramu CLI provides convenient aliases for different language models. The following model aliases are available:
 
-- `haiku`: Anthropic Claude Haiku 1x
-- `sonnet`: Anthropic Claude Sonnet 1x
+- `haiku`: Anthropic Claude 3, Haiku 1x
+- `sonnet`: Anthropic Claude 3,  Sonnet 1x
+- `opus` : Anthropic Claude 3,  Opus 1x
 - `mistral7b`: Mistral 7B Instruct 0x
 - `mistral8x7b`: Mistral 8x7B Instruct 0x
 - `mistral-large`: Mistral Large
