@@ -86,6 +86,12 @@ pub async fn generate(
                 ClaudeGenerator::new(region, profile, max_token, temperature, Some(model_name));
             claude_generator.generate(&prompt).await;
         }
+        Some(ModelAlias::Opus) => {
+            let model_name = ModelName::AnthropicClaudeOpus1x;
+            let claude_generator =
+                ClaudeGenerator::new(region, profile, max_token, temperature, Some(model_name));
+            claude_generator.generate(&prompt).await;
+        }
         Some(ModelAlias::Mistral7b) => {
             let model_name = ModelName::MistralMistral7BInstruct0x;
             let mistral_generator =
