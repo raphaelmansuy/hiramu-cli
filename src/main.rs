@@ -2,14 +2,14 @@ use std::io::Read;
 
 use clap::{arg, Command};
 
-const VERSION: &str = "0.1.9";
-
 use hiramu::bedrock::ModelName;
 use hiramu_cli::{
     generator::{claude_generator::ClaudeGenerator, mistral_generator::MistralGenerator},
     model::Generate,
     model_alias::ModelAlias,
 };
+
+const CARGO_TOML: &str = include_str!("../Cargo.toml");
 
 fn cli() -> Command {
     Command::new("hiramu-cli")
@@ -131,7 +131,16 @@ async fn main() {
             generate(prompt, region, profile, max_token, temperature, model).await;
         }
         Some(("version", _)) => {
-            println!("hiramu-cli version {}", VERSION);
+            let cargo_toml: toml::Value =
+                toml::from_str(CARGO_TOML).expect("Failed to parse Cargo.toml");
+
+            let version = cargo_toml
+                .get("package")
+                .and_then(|package| package.get("version"))
+                .and_then(|version| version.as_str())
+                .unwrap_or("Unknown");
+
+            println!("hiramu-cli version {}", version);
         }
         // Help and version commands are handled automatically by clap
         _ => {}
