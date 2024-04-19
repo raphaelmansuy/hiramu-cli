@@ -943,6 +943,7 @@ dependencies = [
  "clap",
  "futures-util",
  "hiramu",
+ "thiserror",
  "tokio",
  "toml",
 ]
