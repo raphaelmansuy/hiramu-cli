@@ -10,6 +10,7 @@ use hiramu::bedrock::{
 use tokio::io::AsyncWriteExt;
 
 use crate::model::Generate;
+
 pub struct ClaudeGenerator {
     region: String,
     profile: String,
