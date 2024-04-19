@@ -4,9 +4,11 @@ use clap::{arg, Command};
 
 use hiramu::bedrock::ModelName;
 use hiramu_cli::{
+    generator::ollama_provider::OllamaProvider,
     generator::{claude_generator::ClaudeGenerator, mistral_generator::MistralGenerator},
     model::Generate,
-    model_alias::ModelAlias,
+    model_alias::{model_alias_from_str, ModelAlias},
+    provider::Provider,
 };
 
 const CARGO_TOML: &str = include_str!("../Cargo.toml");
@@ -50,9 +52,17 @@ fn cli() -> Command {
                     arg!(-M --model <MODEL> "The model alias to use for generation")
                         .required(false)
                         .default_value("haiku")
-                        .value_parser(clap::value_parser!(ModelAlias)),
                 )
-                .arg_required_else_help(false),
+                .arg(
+                    arg!(-P --provider <PROVIDER> "The provider alias to use for generation ollama or bedrock")
+                        .required(false)
+                        .default_value("bedrock")
+                        .value_parser(clap::value_parser!(Provider)),
+                )
+                .arg(
+                    arg!(-E --endpoint <ENDPOINT> "The provider endpoint to use for generation")
+                        .required(false)
+                        .default_value("http://localhost:11434")),                
         )
 }
 
@@ -62,7 +72,9 @@ pub async fn generate(
     profile: Option<String>,
     max_token: Option<u32>,
     temperature: Option<f32>,
-    model: Option<ModelAlias>,
+    model: String,
+    provider: Provider,
+    endpoint: Option<String>,
 ) {
     let mut prompt = question.to_string();
 
@@ -72,6 +84,27 @@ pub async fn generate(
         prompt = prompt.replace("{input}", input.trim());
     }
 
+    match provider {
+        Provider::Bedrock => {
+            let model = model_alias_from_str(&model);
+            bedrock_generate(model, region, profile, max_token, temperature, prompt).await;
+        }
+        Provider::Ollama => {
+            let endpoint = endpoint.unwrap_or("http://localhost:11434".to_string());
+            let ollama_provider = OllamaProvider::new(endpoint, model);
+            ollama_provider.generate(&prompt).await;
+        }
+    }
+}
+
+async fn bedrock_generate(
+    model: Option<ModelAlias>,
+    region: Option<String>,
+    profile: Option<String>,
+    max_token: Option<u32>,
+    temperature: Option<f32>,
+    prompt: String,
+) {
     // get model_name form model
     match model {
         Some(ModelAlias::Haiku) => {
@@ -127,8 +160,23 @@ async fn main() {
             let profile = sub_matches.get_one::<String>("profile").cloned();
             let max_token = sub_matches.get_one::<u32>("maxtoken").cloned();
             let temperature = sub_matches.get_one::<f32>("temperature").cloned();
-            let model = sub_matches.get_one::<ModelAlias>("model").cloned();
-            generate(prompt, region, profile, max_token, temperature, model).await;
+            let model = sub_matches.get_one::<String>("model").cloned().unwrap();
+            let endpoint = sub_matches.get_one::<String>("endpoint").cloned();
+            let provider = sub_matches
+                .get_one::<Provider>("provider")
+                .cloned()
+                .unwrap();
+            generate(
+                prompt,
+                region,
+                profile,
+                max_token,
+                temperature,
+                model,
+                provider,
+                endpoint,
+            )
+            .await;
         }
         Some(("version", _)) => {
             let cargo_toml: toml::Value =
