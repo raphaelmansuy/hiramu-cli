@@ -56,6 +56,12 @@ jobs:
           brew install openssl
           echo "OPENSSL_DIR=$(brew --prefix openssl)" >> $GITHUB_ENV
 
+      - name: Build Project
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --target ${{ matrix.target }}
+
       - name: Package Build Artifacts
         run: |
           binary_name="hiramu-cli"
@@ -73,12 +79,6 @@ jobs:
             echo "ASSET_PATH=$dirname.tar.gz" >> $GITHUB_ENV
           fi
         shell: bash
-
-      - name: Build Project
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release --target ${{ matrix.target }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
