@@ -88,28 +88,23 @@ jobs:
           echo "::set-output name=version::$version"
         shell: bash
 
-      - name: Check if tag exists
-        id: check_tag
+      - name: Delete local tag if exists
         run: |
-          if git ls-remote --tags origin | grep -q "refs/tags/v${{ steps.cargo_toml_version.outputs.version }}$"; then
-            echo "::set-output name=exists::true"
-          else
-            echo "::set-output name=exists::false"
-          fi
+          git tag -d v${{ steps.cargo_toml_version.outputs.version }} || true
+        shell: bash
 
-      - name: Delete existing tag (if exists)
-        if: steps.check_tag.outputs.exists == 'true'
+      - name: Delete remote tag if exists
         run: |
-          git tag -d v${{ steps.cargo_toml_version.outputs.version }}
-          git push --delete origin v${{ steps.cargo_toml_version.outputs.version }}
+          git push --delete origin v${{ steps.cargo_toml_version.outputs.version }} || true
+        shell: bash
 
       - name: Create and push tag
-        if: steps.check_tag.outputs.exists == 'false' || steps.delete_tag.outcome == 'success'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git tag -a v${{ steps.cargo_toml_version.outputs.version }} -m "Release v${{ steps.cargo_toml_version.outputs.version }}"
           git push origin v${{ steps.cargo_toml_version.outputs.version }}
+        shell: bash
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
