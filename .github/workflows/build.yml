@@ -17,18 +17,18 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - { os: ubuntu-latest  , target: arm-unknown-linux-gnueabihf , use-cross: use-cross }
-          - { os: ubuntu-latest  , target: aarch64-unknown-linux-gnu   , use-cross: use-cross }
-          - { os: ubuntu-latest  , target: i686-unknown-linux-gnu      , use-cross: use-cross }
-          - { os: ubuntu-latest  , target: i686-unknown-linux-musl     , use-cross: use-cross }
-          - { os: ubuntu-latest  , target: x86_64-unknown-linux-gnu    , use-cross: use-cross }
-          - { os: ubuntu-latest  , target: x86_64-unknown-linux-musl   , use-cross: use-cross }
-          - { os: macos-latest   , target: x86_64-apple-darwin         }
-          - { os: macos-latest   , target: aarch64-apple-darwin        }
-          - { os: windows-latest , target: i686-pc-windows-gnu         }
-          - { os: windows-latest , target: i686-pc-windows-msvc        }
-          - { os: windows-latest , target: x86_64-pc-windows-gnu       }
-          - { os: windows-latest , target: x86_64-pc-windows-msvc      }
+          - { os: ubuntu-latest, target: arm-unknown-linux-gnueabihf, use-cross: true }
+          - { os: ubuntu-latest, target: aarch64-unknown-linux-gnu, use-cross: true }
+          - { os: ubuntu-latest, target: i686-unknown-linux-gnu, use-cross: true }
+          - { os: ubuntu-latest, target: i686-unknown-linux-musl, use-cross: true }
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu, use-cross: true }
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-musl, use-cross: true }
+          - { os: macos-latest, target: x86_64-apple-darwin }
+          - { os: macos-latest, target: aarch64-apple-darwin }
+          - { os: windows-latest, target: i686-pc-windows-gnu }
+          - { os: windows-latest, target: i686-pc-windows-msvc }
+          - { os: windows-latest, target: x86_64-pc-windows-gnu }
+          - { os: windows-latest, target: x86_64-pc-windows-msvc }
 
     steps:
     - uses: actions/checkout@v3
@@ -44,6 +44,7 @@ jobs:
     - name: Install musl tools (Linux)
       if: contains(matrix.job.target, 'musl')
       run: sudo apt-get update && sudo apt-get install -y musl-tools
+
     - name: Install MinGW toolchain (Windows)
       if: contains(matrix.job.target, 'windows-gnu')
       uses: egor-tensin/setup-mingw@v2
@@ -52,21 +53,23 @@ jobs:
 
     - name: Get Version
       id: get_version
-      run: echo ::set-output name=VERSION::$(grep '^version = ' Cargo.toml | sed 's/^version = //' | sed 's/"//g')
+      run: echo "VERSION=$(grep '^version = ' Cargo.toml | sed 's/^version = //' | sed 's/"//g')" >> $GITHUB_ENV
 
     - name: Build Release Binary
-      uses: actions-rs/cargo@v1
-      with:
-        use-cross: ${{ matrix.job.use-cross }}
-        command: build
-        args: --release --target ${{ matrix.job.target }} --verbose
+      run: |
+        if [ "${{ matrix.job.use-cross }}" = "true" ]; then
+          cargo install cross
+          cross build --release --target ${{ matrix.job.target }} --verbose
+        else
+          cargo build --release --target ${{ matrix.job.target }} --verbose
+        fi
       env:
         OPENSSL_DIR: /usr/local/opt/openssl
         PKG_CONFIG_ALLOW_CROSS: 1
 
     - name: Strip release binary (Unix)
       if: matrix.job.target != 'x86_64-pc-windows-msvc'
-      run: strip "target/${{ matrix.job.target }}/release/hiramu-cli"
+      run: strip "target/${{ matrix.job.target }}/release/${{ env.PROJECT_NAME }}"
 
     - name: Create Release
       id: create_release
@@ -74,8 +77,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v${{ steps.get_version.outputs.VERSION }}
-        release_name: Release v${{ steps.get_version.outputs.VERSION }}
+        tag_name: v${{ env.VERSION }}
+        release_name: Release v${{ env.VERSION }}
         draft: false
         prerelease: false
 
@@ -85,6 +88,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./target/${{ matrix.job.target }}/release/hiramu-cli
-        asset_name: hiramu-cli-${{ matrix.job.target }}
+        asset_path: ./target/${{ matrix.job.target }}/release/${{ env.PROJECT_NAME }}
+        asset_name: ${{ env.PROJECT_NAME }}-${{ matrix.job.target }}
         asset_content_type: application/octet-stream
