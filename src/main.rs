@@ -21,6 +21,7 @@ fn version_subcommand() -> Command {
 
 fn prompt_subcommand() -> Command {
     Command::new("generate")
+        .aliases(&["prompt"])
         .about("Ask a question to a LLM")
         .arg(arg!(<PROMPT> "The prompt to ask. Can contain {input} to read from stdin."))
         .arg(arg!(-r --region <REGION> "The region to use").default_value("us-west-2"))
@@ -127,7 +128,7 @@ async fn main() -> Result<(), GenerationError> {
     let matches = cli().get_matches();
 
     match matches.subcommand() {
-        Some(("prompt", sub_matches)) => {
+        Some(("generate", sub_matches)) => {
             let prompt = sub_matches.get_one::<String>("PROMPT").expect("required");
             let region = sub_matches.get_one::<String>("region").cloned();
             let profile = sub_matches.get_one::<String>("profile").cloned();
