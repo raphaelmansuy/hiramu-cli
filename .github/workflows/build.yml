@@ -18,9 +18,6 @@ jobs:
     strategy:
       matrix:
         include:
-#          - build: linux
-#            os: ubuntu-20.04
-#            target: x86_64-unknown-linux-musl
           - build: macos
             os: macos-11
             target: x86_64-apple-darwin
@@ -53,16 +50,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
-      - name: Install OpenSSL Dependencies
-        if: matrix.os == 'ubuntu-20.04'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libssl-dev pkg-config
-          sudo apt-get install -y musl-tools
-          echo "OPENSSL_DIR=/usr" >> $GITHUB_ENV
-          echo "OPENSSL_LIB_DIR=/usr/lib/x86_64-linux-gnu" >> $GITHUB_ENV
-          echo "OPENSSL_INCLUDE_DIR=/usr/include" >> $GITHUB_ENV
-
       - name: Install OpenSSL via Homebrew
         if: startsWith(matrix.os, 'macos')
         run: |
@@ -79,8 +66,9 @@ jobs:
         shell: bash
         run: |
           binary_name="hiramu-cli"
-          dirname="${binary_name}-${GITHUB_REF#refs/tags/}-${{ matrix.target }}"
-          mkdir "$dirname"
+          ref_name=$(echo "${GITHUB_REF}" | sed 's|refs/.*/||')
+          dirname="${binary_name}-${ref_name}-${{ matrix.target }}"
+          mkdir -p "$dirname"
           if [ "${{ matrix.os }}" == "windows-2019" ]; then
             mv "target/${{ matrix.target }}/release/${binary_name}.exe" "$dirname/"
             Compress-Archive -Path "$dirname" -DestinationPath "$dirname.zip"
