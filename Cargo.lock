@@ -910,9 +910,9 @@ checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
 name = "hiramu"
-version = "0.1.14"
+version = "0.1.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc93a83b89f788697d07293e09e543efcf94bc4c825552569111b82b2a12c169"
+checksum = "b342c067012b413bac34c3e93cf80e1c062b2b881d2495e922b757abf94e047f"
 dependencies = [
  "async-stream",
  "aws-config",
@@ -938,7 +938,7 @@ dependencies = [
 
 [[package]]
 name = "hiramu-cli"
-version = "0.1.15"
+version = "0.1.16"
 dependencies = [
  "clap",
  "futures-util",

@@ -20,7 +20,7 @@ fn version_subcommand() -> Command {
 }
 
 fn prompt_subcommand() -> Command {
-    Command::new("prompt")
+    Command::new("generate")
         .about("Ask a question to a LLM")
         .arg(arg!(<PROMPT> "The prompt to ask. Can contain {input} to read from stdin."))
         .arg(arg!(-r --region <REGION> "The region to use").default_value("us-west-2"))
@@ -73,7 +73,7 @@ async fn generate(
         }
         Provider::Ollama => {
             let endpoint = endpoint.unwrap_or_else(|| "http://localhost:11434".to_string());
-            let ollama_provider = OllamaProvider::new(endpoint, model);
+            let ollama_provider = OllamaProvider::new(endpoint, model, max_token, temperature);
             ollama_provider.generate(&prompt).await;
         }
     }
