@@ -1,6 +1,6 @@
 [package]
 name = "hiramu-cli"
-version = "0.1.16"
+version = "0.1.17"
 edition = "2021"
 description = "A command-line interface tool for interacting with large language models (LLMs) on AWS Bedrock and generating text based on prompts."
 license = "Apache-2.0"
@@ -11,7 +11,7 @@ license = "Apache-2.0"
 [dependencies]
 clap = { version = "4.5.4", features = ["derive","cargo"] }
 futures-util = "0.3.30"
-hiramu = "0.1.14"
+hiramu = "0.1.15"
 serde = "1.0.198"
 thiserror = "1.0.58"
 tokio = "1.37.0"
