@@ -33,12 +33,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Install Cygwin (Windows only)
-        if: matrix.os == 'windows-2019'
-        run: |
-          choco install cygwin
-          echo "C:\tools\cygwin\bin" >> $GITHUB_PATH
-
       - name: Set Up Rust Toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -77,8 +71,9 @@ jobs:
           mkdir -p "$dirname"
           if [ "${{ matrix.os }}" == "windows-2019" ]; then
             mv "target/${{ matrix.target }}/release/${binary_name}.exe" "$dirname/"
-            cygstart -- /bin/bash -c "tar -czvf '$dirname.tar.gz' '$dirname'"
-            echo "ASSET_PATH=$dirname.tar.gz" >> $GITHUB_ENV
+            # Use PowerShell for compressing artifacts on Windows
+            pwsh -Command "Compress-Archive -Path '$dirname/*' -DestinationPath '$dirname.zip'"
+            echo "ASSET_PATH=$dirname.zip" >> $GITHUB_ENV
           else
             mv "target/${{ matrix.target }}/release/${binary_name}" "$dirname/"
             tar -czvf "$dirname.tar.gz" "$dirname"
@@ -93,14 +88,28 @@ jobs:
           echo "::set-output name=version::$version"
         shell: bash
 
-      - name: Create Version Tag
-        if: github.ref == 'refs/heads/master'
+      - name: Check if tag exists
+        id: check_tag
         run: |
-          version=${{ steps.cargo_toml_version.outputs.version }}
+          if git ls-remote --tags origin | grep -q "refs/tags/v${{ steps.cargo_toml_version.outputs.version }}$"; then
+            echo "::set-output name=exists::true"
+          else
+            echo "::set-output name=exists::false"
+          fi
+
+      - name: Delete existing tag (if exists)
+        if: steps.check_tag.outputs.exists == 'true'
+        run: |
+          git tag -d v${{ steps.cargo_toml_version.outputs.version }}
+          git push --delete origin v${{ steps.cargo_toml_version.outputs.version }}
+
+      - name: Create and push tag
+        if: steps.check_tag.outputs.exists == 'false' || steps.delete_tag.outcome == 'success'
+        run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git tag -a "v$version" -m "Release v$version"
-          git push origin "v$version"        
+          git tag -a v${{ steps.cargo_toml_version.outputs.version }} -m "Release v${{ steps.cargo_toml_version.outputs.version }}"
+          git push origin v${{ steps.cargo_toml_version.outputs.version }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
