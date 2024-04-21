@@ -59,7 +59,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libssl-dev pkg-config
           sudo apt-get install -y musl-tools
-          echo "OPENSSL_DIR=/usr/include/openssl" >> $GITHUB_ENV
+          echo "OPENSSL_DIR=/usr" >> $GITHUB_ENV
+          echo "OPENSSL_LIB_DIR=/usr/lib/x86_64-linux-gnu" >> $GITHUB_ENV
+          echo "OPENSSL_INCLUDE_DIR=/usr/include" >> $GITHUB_ENV
 
       - name: Install OpenSSL via Homebrew
         if: startsWith(matrix.os, 'macos')
