@@ -58,6 +58,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libssl-dev pkg-config
+          sudo apt-get install -y musl-tools
           echo "OPENSSL_DIR=/usr/include/openssl" >> $GITHUB_ENV
 
       - name: Install OpenSSL via Homebrew
