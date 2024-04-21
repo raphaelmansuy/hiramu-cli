@@ -18,9 +18,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - build: linux
-            os: ubuntu-20.04
-            target: x86_64-unknown-linux-musl
+#          - build: linux
+#            os: ubuntu-20.04
+#            target: x86_64-unknown-linux-musl
           - build: macos
             os: macos-11
             target: x86_64-apple-darwin
