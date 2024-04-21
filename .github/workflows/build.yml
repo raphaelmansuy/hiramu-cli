@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  issues: write  
 
 jobs:
   build-and-upload:
@@ -79,6 +80,22 @@ jobs:
             echo "ASSET_PATH=$dirname.tar.gz" >> $GITHUB_ENV
           fi
         shell: bash
+
+      - name: Extract Version from Cargo.toml
+        id: cargo_toml_version
+        run: |
+          version=$(sed -n -e 's/^version = "\(.*\)"/\1/p' Cargo.toml)
+          echo "::set-output name=version::$version"
+        shell: bash
+
+      - name: Create Version Tag
+        if: github.ref == 'refs/heads/master'
+        run: |
+          version=${{ steps.cargo_toml_version.outputs.version }}
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a "v$version" -m "Release v$version"
+          git push origin "v$version"        
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
