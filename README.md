@@ -1,5 +1,3 @@
-Here is an improved version of the README.md file:
-
 **Hiramu CLI**
 ================
 
