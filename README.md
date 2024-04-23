@@ -10,6 +10,7 @@ Hiramu CLI is a powerful command-line interface for interacting with language mo
   - [Interactive Input](#interactive-input)
   - [Model Aliases](#model-aliases)
   - [Provider Aliases](#provider-aliases)
+- [Installation](#installation)
 - [Examples](#examples)
 - [Contributing](#contributing)
 - [Versioning](#versioning)
@@ -125,6 +126,61 @@ Here are a few examples demonstrating the usage of Hiramu CLI:
 
 Feel free to explore different prompts, models, providers, and options to generate various types of content using Hiramu CLI.
 
+## Installation
+
+## Adding the Homebrew Tap
+
+To utilize the `raphaelmansuy/homebrew-tap`, you'll first need to integrate it with your Homebrew setup on your Mac. Follow these steps to get started:
+
+### Step 1: Open Terminal
+Launch the Terminal application on your Mac. You can find it in the `Applications/Utilities` folder, or you can search for it using Spotlight.
+
+### Step 2: Add the Tap
+In the Terminal, execute the following command to add the `raphaelmansuy/homebrew-tap`:
+
+```bash
+brew tap raphaelmansuy/homebrew-tap
+```
+
+This command registers the `raphaelmansuy/homebrew-tap` with your Homebrew installation, enabling you to access the packages (formulas) available in this repository.
+
+## Installing `hiramu-cli` Using Homebrew
+
+With the tap now added, you can proceed to install the `hiramu-cli` package directly through Homebrew.
+
+### Step 1: Install the Package
+In the same Terminal window, run the following command to install `hiramu-cli`:
+
+```bash
+brew install hiramu-cli
+```
+
+This command fetches and installs the `hiramu-cli` package from the `raphaelmansuy/homebrew-tap`, setting it up on your system.
+
+### Step 2: Verify Installation
+After the installation process completes, you can verify that `hiramu-cli` is correctly installed by typing:
+
+```bash
+hiramu-cli --version
+```
+
+This command should display the version number of `hiramu-cli`, confirming that it is ready to use.
+
+## Summary of Steps
+
+Here’s a quick recap of what you need to do to get `hiramu-cli` up and running on your Mac:
+
+1. **Add the Tap**:
+   ```bash
+   brew tap raphaelmansuy/homebrew-tap
+   ```
+2. **Install `hiramu-cli`**:
+   ```bash
+   brew install hiramu-cli
+   ```
+
+After completing these steps, `hiramu-cli` will be available in your Terminal, and you can begin using it for your tasks.
+
 ## Contributing
 
 Contributions to Hiramu CLI are welcome! If you encounter any issues or have suggestions for improvements, please open an issue on the GitHub repository.
@@ -140,6 +196,7 @@ Feel free to explore different prompts, models, and options to generate various 
 --------------
 
 Contributions to Hiramu CLI are welcome If you encounter any issues or have suggestions for improvements, please open an issue on the GitHub repository.
+
 
 **Version**
 ----------
