@@ -2,6 +2,9 @@
 
 Hiramu CLI is a powerful command-line interface for interacting with language models. It provides a seamless way to ask questions and generate text using various models from different providers, including Anthropic's Claude (Haiku, Sonnet, Opus), Mistral (7B, 8x7B, Large), and Ollama.
 
+🤗 If you find it compelling, I would be grateful if you could show your support by giving it a Star 🌟.
+
+
 ## Table of Contents
 - [Features](#features)
 - [Installation](#installation)
@@ -126,7 +129,7 @@ Here are a few examples demonstrating the usage of Hiramu CLI:
 
 Feel free to explore different prompts, models, providers, and options to generate various types of content using Hiramu CLI.
 
-## Installation
+## Installation (MacOs)
 
 ## Adding the Homebrew Tap
 
@@ -197,11 +200,12 @@ Feel free to explore different prompts, models, and options to generate various 
 
 Contributions to Hiramu CLI are welcome If you encounter any issues or have suggestions for improvements, please open an issue on the GitHub repository.
 
+If you find it compelling, I would be grateful if you could show your support by giving it a Star 🌟.
 
 **Version**
 ----------
 
-### 0.1.21
+### 0.1.23
 
 * Fix issue with {input} handling
 
