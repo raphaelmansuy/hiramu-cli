@@ -102,12 +102,16 @@ jobs:
         shell: bash
 
       - name: Create and push tag
-        if: steps.check_tag.outputs.exists == 'false'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git tag -a v${{ steps.cargo_toml_version.outputs.version }} -m "Release v${{ steps.cargo_toml_version.outputs.version }}"
-          git push origin v${{ steps.cargo_toml_version.outputs.version }}
+          # Check if the tag already exists
+          if git rev-parse "v${{ steps.cargo_toml_version.outputs.version }}" >/dev/null 2>&1; then
+            echo "Tag v${{ steps.cargo_toml_version.outputs.version }} already exists. Skipping tag creation."
+          else
+            git tag -a v${{ steps.cargo_toml_version.outputs.version }} -m "Release v${{ steps.cargo_toml_version.outputs.version }}"
+            git push origin v${{ steps.cargo_toml_version.outputs.version }}
+          fi
         shell: bash
 
       - name: Create GitHub Release
