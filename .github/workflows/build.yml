@@ -71,14 +71,12 @@ jobs:
           mkdir -p "$dirname"
           if [ "${{ matrix.os }}" == "windows-2019" ]; then
             mv "target/${{ matrix.target }}/release/${binary_name}.exe" "$dirname/"
-            # Use PowerShell for compressing artifacts on Windows
             pwsh -Command "Compress-Archive -Path '$dirname/*' -DestinationPath '$dirname.zip'"
             echo "ASSET_PATH=$dirname.zip" >> $GITHUB_ENV
-          else
+          else:
             mv "target/${{ matrix.target }}/release/${binary_name}" "$dirname/"
             tar -czvf "$dirname.tar.gz" "$dirname"
             echo "ASSET_PATH=$dirname.tar.gz" >> $GITHUB_ENV
-          fi
         shell: bash
 
       - name: Extract Version from Cargo.toml
@@ -88,17 +86,18 @@ jobs:
           echo "::set-output name=version::$version"
         shell: bash
 
-      - name: Delete local tag if exists
+      - name: Check if tag exists
+        id: check_tag
         run: |
-          git tag -d v${{ steps.cargo_toml_version.outputs.version }} || true
-        shell: bash
-
-      - name: Delete remote tag if exists
-        run: |
-          git push --delete origin v${{ steps.cargo_toml_version.outputs.version }} || true
+          if git rev-parse "v${{ steps.cargo_toml_version.outputs.version }}" >/dev/null 2>&1; then
+            echo "::set-output name=exists::true"
+          else
+            echo "::set-output name=exists::false"
+          fi
         shell: bash
 
       - name: Create and push tag
+        if: steps.check_tag.outputs.exists == 'false'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
