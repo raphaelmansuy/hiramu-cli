@@ -129,6 +129,7 @@ Here are a few examples demonstrating the usage of Hiramu CLI:
 
 Feel free to explore different prompts, models, providers, and options to generate various types of content using Hiramu CLI.
 
+
 ## Installation (MacOs)
 
 ## Adding the Homebrew Tap
@@ -183,6 +184,15 @@ Here’s a quick recap of what you need to do to get `hiramu-cli` up and running
    ```
 
 After completing these steps, `hiramu-cli` will be available in your Terminal, and you can begin using it for your tasks.
+
+## Installation (Cargo)
+
+To install the Hiramu CLI using Cargo, you first need to ensure that Rust is installed on your system. 
+
+If Rust is not already installed, you can download and install it by following the official guide available at [https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install). 
+
+Once Rust is installed, open your terminal and execute the command `cargo install hiramu-cli`. This command will download and install the Hiramu CLI from the available package, setting it up on your system for immediate use.
+
 
 ## Contributing
 
