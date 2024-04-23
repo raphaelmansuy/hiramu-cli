@@ -122,7 +122,7 @@ Here are a few examples demonstrating the usage of Hiramu CLI:
 6. Optimize SQL queries using PostgreSQL:
    ```bash
    query="SELECT * FROM orders JOIN customers ON orders.customer_id = customers.id"
-   optimized_query=$(echo "$query" | hiramu-cli generate "Optimize this SQL query:" -M mistral-large)
+   optimized_query=$(echo "$query" | hiramu-cli generate "Optimize this SQL query: {input}" -M mistral-large)
    psql -d mydb -c "$optimized_query"
    ```
    The existing SQL query is passed to Hiramu CLI to generate an optimized version, which is then executed using PostgreSQL.
