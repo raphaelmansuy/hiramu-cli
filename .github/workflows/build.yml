@@ -67,18 +67,22 @@ jobs:
         run: |
           binary_name="hiramu-cli"
           ref_name=$(echo "${GITHUB_REF}" | sed 's|refs/.*/||')
-          dirname="${binary_name}-${ref_name}-x86_64-pc-windows-msvc"
-          mkdir -p "$dirname"
           if [ "${{ runner.os }}" == "Windows" ]; then
+            dirname="${binary_name}-${ref_name}-x86_64-pc-windows-msvc"
+            mkdir -p "$dirname"
             mv "target/x86_64-pc-windows-msvc/release/${binary_name}.exe" "$dirname/"
             pwsh -Command "Compress-Archive -Path '$dirname/*' -DestinationPath '$dirname.zip'"
             echo "ASSET_PATH=$dirname.zip" >> $GITHUB_ENV
           else
-            mv "target/x86_64-pc-windows-msvc/release/${binary_name}" "$dirname/"
+            dirname="${binary_name}-${ref_name}-${{ matrix.target }}"
+            mkdir -p "$dirname"
+            mv "target/${{ matrix.target }}/release/${binary_name}" "$dirname/"
             tar -czvf "$dirname.tar.gz" "$dirname"
             echo "ASSET_PATH=$dirname.tar.gz" >> $GITHUB_ENV
           fi
         shell: bash
+        env:
+          OPENSSL_DIR: /usr/local/opt/openssl@3
 
       - name: Extract Version from Cargo.toml
         id: cargo_toml_version
