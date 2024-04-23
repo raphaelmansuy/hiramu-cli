@@ -81,8 +81,6 @@ jobs:
             echo "ASSET_PATH=$dirname.tar.gz" >> $GITHUB_ENV
           fi
         shell: bash
-        env:
-          OPENSSL_DIR: /usr/local/opt/openssl@3
 
       - name: Extract Version from Cargo.toml
         id: cargo_toml_version
@@ -102,21 +100,17 @@ jobs:
         shell: bash
 
       - name: Create and push tag
+        if: steps.check_tag.outputs.exists == 'false'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          # Check if the tag already exists
-          if git rev-parse "v${{ steps.cargo_toml_version.outputs.version }}" >/dev/null 2>&1; then
-            echo "Tag v${{ steps.cargo_toml_version.outputs.version }} already exists. Skipping tag creation."
-          else
-            git tag -a v${{ steps.cargo_toml_version.outputs.version }} -m "Release v${{ steps.cargo_toml_version.outputs.version }}"
-            git push origin v${{ steps.cargo_toml_version.outputs.version }}
-          fi
+          git tag -a v${{ steps.cargo_toml_version.outputs.version }} -m "Release v${{ steps.cargo_toml_version.outputs.version }}"
+          git push origin v${{ steps.cargo_toml_version.outputs.version }}
         shell: bash
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
         with:
           files: ${{ env.ASSET_PATH }}
         env:
