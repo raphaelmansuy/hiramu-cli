@@ -88,7 +88,7 @@ Contributions to Hiramu CLI are welcome If you encounter any issues or have sugg
 **Version**
 ----------
 
-### 0.1.21
+### 0.1.23
 
 * Fix issue with {input} handling
 
