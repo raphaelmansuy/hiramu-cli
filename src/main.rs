@@ -1,6 +1,7 @@
 use clap::{arg, Command};
-use std::io::{self, Read};
+use std::io::{self, Read, Write};
 use tokio::main;
+use atty::Stream;
 
 use hiramu::bedrock::ModelName;
 use hiramu_cli::{
@@ -47,14 +48,25 @@ fn fill_input(prompt: &str) -> io::Result<String> {
     let mut prompt = prompt.to_string();
 
     if prompt.contains("{input}") {
-        let mut input = String::new();
-        io::stdin().read_to_string(&mut input)?;
-        prompt = prompt.replace("{input}", input.trim());
+        if atty::is(Stream::Stdin) {
+            // Terminal input
+            print!("Enter input > ");
+            io::stdout().flush()?;
+            let mut input = String::new();
+            io::stdin().read_line(&mut input)?;
+            prompt = prompt.replace("{input}", input.trim());
+        } else {
+            // Piped input
+            let stdin = io::stdin();
+            let mut handle = stdin.lock();
+            let mut input = String::new();
+            handle.read_to_string(&mut input)?;
+            prompt = prompt.replace("{input}", input.trim());
+        }
     }
 
     Ok(prompt)
 }
-
 async fn generate(
     question: &str,
     region: Option<String>,

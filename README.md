@@ -88,6 +88,10 @@ Contributions to Hiramu CLI are welcome If you encounter any issues or have sugg
 **Version**
 ----------
 
+### 0.1.21
+
+* Fix issue with {input} handling
+
 ### 0.1.16
 
 * Replace `prompt` command with `generate`
